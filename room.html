@@ -1,94 +1,57 @@
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wavely - الغرفة</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="favicon.png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wavely - الغرفة</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="room-container">
-        <h1>🎥 غرفة المشاهدة</h1>
-        <div class="search-bar">
-            <input type="text" id="searchQuery" placeholder="ابحث باستخدام محرك بحث Google...">
-            <button onclick="searchGoogle()">🔍 بحث</button>
-        </div>
-        <div class="platforms">
-            <h3>📺 اختر منصة:</h3>
-            <div class="platform-icons">
-                <div onclick="loadPlatform('netflix')"><img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix"></div>
-                <div onclick="loadPlatform('prime')"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Prime_Video.png" alt="Prime Video"></div>
-                <div onclick="loadPlatform('disney')"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" alt="Disney+"></div>
-                <div onclick="loadPlatform('shahid')"><img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Shahid_Logo.png" alt="Shahid"></div>
-                <div onclick="loadPlatform('youtube')"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" alt="YouTube"></div>
-            </div>
-        </div>
-        <div class="video-player" id="playerArea"></div>
-        <div class="audio-control">
-            <button id="toggleAudioBtn" onclick="toggleAudio()">🎤 تشغيل المايك</button>
-        </div>
-        <div class="chat">
-            <div id="messages"></div>
-            <input type="text" id="messageInput" placeholder="اكتب رسالتك...">
-            <button onclick="sendMessage()">💬 إرسال</button>
-        </div>
+  <div class="room-container">
+    <h1>🎥 غرفة المشاهدة</h1>
+    <div class="search-bar">
+      <input type="text" id="searchQuery" placeholder="ابحث باستخدام محرك بحث Google...">
+      <button onclick="searchGoogle()">🔍 بحث</button>
     </div>
+    <div class="chat">
+      <div id="messages"></div>
+      <input type="text" id="messageInput" placeholder="اكتب رسالتك...">
+      <button onclick="sendMessage()">💬 إرسال</button>
+    </div>
+  </div>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
-function searchGoogle() {
-    const query = document.getElementById('searchQuery').value.trim();
-    if (query) window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
-}
-function loadPlatform(platform) {
-    const playerArea = document.getElementById('playerArea');
-    if (platform === 'youtube') {
-        playerArea.innerHTML = '<iframe src="https://www.youtube.com" allowfullscreen></iframe>';
-    } else {
-        playerArea.innerHTML = '<div class="notice">⚡ هذه المنصة لا تسمح بالعرض المباشر هنا. اضغط <a href="' + getPlatformLink(platform) + '" target="_blank" style="color:#00e0ff;">هنا</a> للانتقال.</div>';
-    }
-}
-function getPlatformLink(platform) {
-    switch(platform) {
-        case 'netflix': return 'https://www.netflix.com';
-        case 'prime': return 'https://www.amazon.com/Prime-Video';
-        case 'disney': return 'https://www.disneyplus.com';
-        case 'shahid': return 'https://shahid.mbc.net';
-        default: return '#';
-    }
-}
-function toggleAudio() {
-    alert('تشغيل المايك قادم قريباً! 🚀');
-}
-function sendMessage() {
-    const input = document.getElementById('messageInput');
-    if (input.value.trim()) {
-        const messagesDiv = document.getElementById('messages');
-        const newMessage = document.createElement('div');
-        newMessage.textContent = input.value.trim();
-        messagesDiv.appendChild(newMessage);
-        input.value = '';
-    }
-}
+const socket = io("https://YOUR_SERVER_URL_HERE");
 
-window.addEventListener("DOMContentLoaded", function() {
-    const siteTitle = localStorage.getItem('siteTitle') || 'Wavely';
-    const faviconUrl = localStorage.getItem('faviconUrl');
+let username = "";
 
-    document.title = siteTitle;
-    const h1 = document.querySelector('h1');
-    if (h1) h1.textContent = '🎥 غرفة ' + siteTitle;
-
-    if (faviconUrl) {
-        let link = document.querySelector("link[rel~='icon']");
-        if (!link) {
-            link = document.createElement('link');
-            link.rel = 'icon';
-            document.head.appendChild(link);
-        }
-        link.href = faviconUrl;
-    }
+window.addEventListener('load', () => {
+  username = prompt("ادخل اسم المستخدم:");
+  if (!username) username = "مستخدم مجهول";
+  socket.emit('joinRoom', username);
 });
+
+function sendMessage() {
+  const input = document.getElementById('messageInput');
+  if (input.value.trim()) {
+    socket.emit('sendMessage', input.value.trim());
+    input.value = "";
+  }
+}
+
+socket.on('chatMessage', (data) => {
+  const messagesDiv = document.getElementById('messages');
+  const newMessage = document.createElement('div');
+  newMessage.innerHTML = `<strong>${data.user}</strong>: ${data.message}`;
+  messagesDiv.appendChild(newMessage);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+});
+
+function searchGoogle() {
+  const query = document.getElementById('searchQuery').value.trim();
+  if (query) window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+}
 </script>
 </body>
 </html>
