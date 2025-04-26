@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wavely - الصفحة الرئيسية</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Wavely</h1>
+        <p>شاهد الفيديوهات مع أصدقائك في أي وقت ومن أي مكان</p>
+        <button onclick="createRoom()">🚀 ابدأ إنشاء غرفة</button>
+    </div>
+
+<script>
+function createRoom() {
+    const roomId = Math.random().toString(36).substring(2, 8);
+    window.location.href = `room.html?room=${roomId}`;
+}
+
+window.addEventListener("DOMContentLoaded", function() {
+    const siteTitle = localStorage.getItem('siteTitle') || 'Wavely';
+    const siteDescription = localStorage.getItem('siteDescription') || 'شاهد الفيديوهات مع أصدقائك في أي وقت ومن أي مكان';
+    const faviconUrl = localStorage.getItem('faviconUrl');
+
+    document.title = siteTitle;
+    const h1 = document.querySelector('h1');
+    if (h1) h1.textContent = '🎬 ' + siteTitle;
+    const p = document.querySelector('p');
+    if (p) p.textContent = siteDescription;
+
+    if (faviconUrl) {
+        let link = document.querySelector("link[rel~='icon']");
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+        }
+        link.href = faviconUrl;
+    }
+});
+</script>
+</body>
+</html>

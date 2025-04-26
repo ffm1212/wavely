@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم Wavely</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="admin-container">
+    <h1>⚙️ لوحة تحكم Wavely</h1>
+    <input type="text" id="siteTitle" placeholder="اسم الموقع - مثال: Wavely">
+    <textarea id="siteDescription" placeholder="الوصف - مثال: شاهد الفيديوهات مع أصدقائك..." rows="2"></textarea>
+    <input type="text" id="faviconUrl" placeholder="رابط الأيقونة (favicon png)">
+    <button onclick="saveSettings()">💾 حفظ التعديلات</button>
+</div>
+
+<script>
+function saveSettings() {
+    localStorage.setItem('siteTitle', document.getElementById('siteTitle').value);
+    localStorage.setItem('siteDescription', document.getElementById('siteDescription').value);
+    localStorage.setItem('faviconUrl', document.getElementById('faviconUrl').value);
+    alert("✅ تم حفظ التعديلات! ارجع للصفحة الرئيسية لتشوف التحديث.");  
+}
+</script>
+</body>
+</html>
